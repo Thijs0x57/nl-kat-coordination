@@ -11,9 +11,13 @@
                     Please allow for up to 24 hours for your report to be ready.
                 {% endblocktranslate %}
             </p>
-            <form id="generate_report" class="inline" method="get" action="{{ next }}">
-                {% include "partials/form/fieldset.html" with fields=observed_at_form %}
-
+            <form id="report-schedule" class="inline" method="get" action="{{ next }}">
+                <label for="recurrence">{% translate "Recurrence" %}</label>
+                <select id="recurrence">
+                    <option value="does-not-repeat">{% translate "Does not repeat" %}</option>
+                    <option value="daily">{% translate "Daily" %}</option>
+                    <option value="monthly">{% translate "Custom" %}</option>
+                </select>
                 <button type="submit">
                     {% translate "Generate report" %}<span class="icon ti-chevron-right"></span>
                 </button>
