@@ -1,0 +1,27 @@
+{% load i18n %}
+{% load static %}
+
+<section>
+    <div>
+        {% if selected_oois and selected_report_types %}
+            <h2>{% translate "Report schedule" %}</h2>
+            <p>
+                {% blocktranslate trimmed %}
+                    The date you select will be the reference date for the data set for your report.
+                    Please allow for up to 24 hours for your report to be ready.
+                {% endblocktranslate %}
+            </p>
+            <form id="generate_report" class="inline" method="get" action="{{ next }}">
+                {% include "partials/form/fieldset.html" with fields=observed_at_form %}
+
+                <button type="submit">
+                    {% translate "Generate report" %}<span class="icon ti-chevron-right"></span>
+                </button>
+            </form>
+        {% else %}
+            <a class="button ghost" href="{{ previous }}">
+                <span class="icon ti-chevron-left"></span>{% translate "Go back" %}
+            </a>
+        {% endif %}
+    </div>
+</section>

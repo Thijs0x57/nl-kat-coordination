@@ -36,7 +36,7 @@ class BreadcrumbsAggregateReportView(ReportBreadcrumbs):
             },
             {
                 "url": reverse("aggregate_report_select_oois", kwargs=kwargs) + selection,
-                "text": _("Select Objects"),
+                "text": _("Select objects"),
             },
             {
                 "url": reverse("aggregate_report_select_report_types", kwargs=kwargs) + selection,
@@ -45,6 +45,10 @@ class BreadcrumbsAggregateReportView(ReportBreadcrumbs):
             {
                 "url": reverse("aggregate_report_setup_scan", kwargs=kwargs) + selection,
                 "text": _("Configuration"),
+            },
+            {
+                "url": reverse("aggregate_report_export_setup", kwargs=kwargs) + selection,
+                "text": _("Export setup"),
             },
             {
                 "url": reverse("aggregate_report_view", kwargs=kwargs) + selection,
@@ -137,7 +141,7 @@ class SetupScanAggregateReportView(
             messages.error(self.request, _("Select at least one report type to proceed."))
 
         if self.all_plugins_enabled["required"] and self.all_plugins_enabled["optional"]:
-            return redirect(reverse("aggregate_report_view", kwargs=kwargs) + get_selection(request))
+            return redirect(reverse("aggregate_report_export_setup", kwargs=kwargs) + get_selection(request))
 
         return super().get(request, *args, **kwargs)
 
@@ -146,6 +150,25 @@ class SetupScanAggregateReportView(
         context["plugins"], context["all_plugins_enabled"] = self.get_required_optional_plugins(
             get_plugins_for_report_ids(self.selected_report_types)
         )
+        return context
+
+
+class ExportSetupAggregateReportView(
+    AggregateReportStepsMixin, BreadcrumbsAggregateReportView, BaseReportView, TemplateView
+):
+    """
+    Blabla.
+    """
+
+    template_name = "aggregate_report/export_setup.html"
+    breadcrumbs_step = 6
+    current_step = 4
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         return context
 
 
