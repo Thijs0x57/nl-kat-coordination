@@ -195,7 +195,7 @@ class ExportSetupGenerateReportView(
     GenerateReportStepsMixin, BreadcrumbsGenerateReportView, BaseReportView, TemplateView
 ):
     """
-    Blabla.
+    Shows the export setup page where users can set their export preferences.
     """
 
     template_name = "generate_report/export_setup.html"
@@ -203,6 +203,10 @@ class ExportSetupGenerateReportView(
     current_step = 4
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if not self.selected_report_types:
+            error_message = _("Select at least one report type to proceed.")
+            messages.add_message(self.request, messages.ERROR, error_message)
+
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -216,7 +220,7 @@ class GenerateReportView(BreadcrumbsGenerateReportView, BaseReportView, Template
     """
 
     template_name = "generate_report.html"
-    current_step = 6
+    current_step = 5
     report_types: Sequence[type[Report]]
 
     def get(self, request, *args, **kwargs):

@@ -127,7 +127,7 @@ class SetupScanMultiReportView(MultiReportStepsMixin, BreadcrumbsMultiReportView
 
 class ExportSetupMultiReportView(MultiReportStepsMixin, BreadcrumbsMultiReportView, BaseReportView, TemplateView):
     """
-    Blabla.
+    Shows the export setup page where users can set their export preferences.
     """
 
     template_name = "generate_report/export_setup.html"
@@ -135,6 +135,9 @@ class ExportSetupMultiReportView(MultiReportStepsMixin, BreadcrumbsMultiReportVi
     current_step = 4
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if not self.selected_report_types:
+            messages.error(self.request, _("Select at least one report type to proceed."))
+
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
