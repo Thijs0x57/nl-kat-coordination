@@ -59,7 +59,7 @@ class Task(BaseModel):
 
     hash: str | None = Field(None, max_length=32)
 
-    data: dict | None = None
+    data: dict | None = {}
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     modified_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -143,3 +143,16 @@ class BoefjeTask(BaseModel):
             return mmh3.hash_bytes(f"{self.input_ooi}-{self.boefje.id}-{self.organization}").hex()
 
         return mmh3.hash_bytes(f"{self.boefje.id}-{self.organization}").hex()
+
+
+class ReportTask(BaseModel):
+    type: ClassVar[str] = "report"
+
+    id: uuid.UUID | None = Field(default_factory=uuid.uuid4)
+
+    # TODO: implement the necessary fields
+
+    # TODO: update this to make a unique hash
+    @property
+    def hash(self) -> str:
+        return mmh3.hash_bytes(f"{self.id}").hex()
