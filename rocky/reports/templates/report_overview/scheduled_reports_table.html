@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load ooi_extra %}
+{% load humanize %}
 {% load report_extra %}
 
 <div class="horizontal-scroll">
@@ -15,18 +16,20 @@
             </tr>
         </thead>
         <tbody>
-            {% for schedule in scheduled_reports %}
-                {% with report=schedule.data %}
+            {% for report_recipe_id, schedule in scheduled_reports.items %}
+                {% with report_recipe=schedule.report_recipe %}
                     <tr>
-                        <td>
+                        <td class="nowrap">
                             <a href="{% url "view_report" organization.code %}?report_id={{ report.reference }}&observed_at={{ report.observed_at|date:"Y-m-d H:i:s:u" }}"
-                               title="{% translate "Show report details" %}">{{ report.name }}</a>
+                               title="{% translate "Show report details" %}">{{ report.name }} Report name</a>
                         </td>
                         <td>
-                            <span class="label tags-color-{{ report.report_type|get_report_type_label_style }}">{{ report.report_type|get_report_type_name }}</span>
+                            {% for report_type in report_recipe.report_types %}
+                                <span class="label tags-color-{{ report_type|get_report_type_label_style }}">{{ report_type|get_report_type_name }}</span>
+                            {% endfor %}
                         </td>
-                        <td>{{ schedule.deadline_at }} scheduled_for_date</td>
-                        <td class="nowrap">recurrence</td>
+                        <td class="nowrap">{{ schedule.deadline_at }}</td>
+                        <td class="nowrap">{{ schedule.schedule }}</td>
                         <td>
                             <button type="button"
                                     class="expando-button icon ti-chevron-down"
@@ -49,12 +52,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for task in schedule.tasks %}
+                                {% for report in schedule.reports %}
                                     <tr>
-                                        <td>{{ task.created_at }} created_at</td>
+                                        <td>{{ schedule.created_at }}</td>
                                         <td>reference_date</td>
                                         <td class="nowrap">
-                                            <span class="icon {{ task.status.value }}"></span>{{ task.status.value|capfirst }}
+                                            <span class="icon {{ report.status.value }}"></span>{{ report.status.value|capfirst }}
                                         </td>
                                     </tr>
                                 {% endfor %}

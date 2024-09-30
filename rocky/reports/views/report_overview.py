@@ -1,7 +1,10 @@
+from datetime import datetime, timezone
+
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
+from octopoes.models.ooi.reports import ReportRecipe
 from reports.views.base import ReportBreadcrumbs, get_selection
 from rocky.paginator import RockyPaginator
 from rocky.scheduler import scheduler_client
@@ -43,8 +46,26 @@ class ScheduledReportsView(BreadcrumbsReportOverviewView, OctopoesView, ListView
 
     def get_queryset(self):
         scheduler_id = f"report-{self.organization.code}"
-        self.scheduled_reports = self.client.get_scheduled_reports(scheduler_id=scheduler_id)
-        return self.scheduled_reports
+        scheduled_reports = self.client.get_scheduled_reports(
+            scheduler_id=scheduler_id
+        )  # All contain a report_recipe_id
+
+        report_recipes = self.octopoes_api_connector.list_objects(
+            types={ReportRecipe}, valid_time=datetime.now(timezone.utc)
+        ).items
+
+        scheduled_reports_dict = {schedule["data"]["report_recipe_id"]: schedule for schedule in scheduled_reports}
+
+        for report_recipe_id, schedule in scheduled_reports_dict.items():
+            if schedule["deadline_at"]:
+                schedule["deadline_at"] = datetime.fromisoformat(schedule["deadline_at"])
+            for recipe in report_recipes:
+                if str(recipe.recipe_id) == report_recipe_id:
+                    schedule["report_recipe"] = recipe
+
+        # Rapporten ophalen die al gegenereerd zijn met dit report_recipe_id
+        self.scheduled_reports = scheduled_reports_dict
+        return scheduled_reports
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
