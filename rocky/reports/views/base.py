@@ -709,6 +709,10 @@ class ViewReportView(ObservedAtMixin, OrganizationView, TemplateView):
         context = super().get_context_data(**kwargs)
         context["report_data"] = self.report_data
         context["report_ooi"] = self.report_ooi
+        context["report_types"] = [
+            report_type for x in REPORTS for report_type in self.report_types if report_type["id"] == x.id
+        ]
+        context["oois"] = self.input_oois
 
         context["report_download_pdf_url"] = url_with_querystring(
             reverse(
